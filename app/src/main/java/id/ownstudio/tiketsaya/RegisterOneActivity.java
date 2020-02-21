@@ -23,7 +23,7 @@ public class RegisterOneActivity extends AppCompatActivity {
     LinearLayout btn_back;
     Button btn_continue;
     EditText username, password, email_address;
-    DatabaseReference reference;
+    DatabaseReference reference, reference_username;
 
     String USERNAME_KEY = "usernamekey";
     String username_key = "";
@@ -63,28 +63,48 @@ public class RegisterOneActivity extends AppCompatActivity {
                 btn_continue.setText("Loading...");
                 btn_continue.setEnabled(false);
 
-                SharedPreferences sharedPreferences = getSharedPreferences(USERNAME_KEY, MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(username_key, username.getText().toString());
-                editor.apply();
-
-                reference = FirebaseDatabase.getInstance().getReference().child("Users").child(username.getText().toString());
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                reference_username = FirebaseDatabase.getInstance().getReference().child("Users").child(username.getText().toString());
+                reference_username.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        dataSnapshot.getRef().child("username").setValue(username.getText().toString());
-                        dataSnapshot.getRef().child("password").setValue(password.getText().toString());
-                        dataSnapshot.getRef().child("email_address").setValue(email_address.getText().toString());
-                        dataSnapshot.getRef().child("user_balance").setValue(800);
+                        if (dataSnapshot.exists()){
+                            Toast.makeText(getApplicationContext(), "Username sudah tersedia!", Toast.LENGTH_SHORT).show();
+
+                            btn_continue.setText("Continue");
+                            btn_continue.setEnabled(true);
+                        } else {
+                            SharedPreferences sharedPreferences = getSharedPreferences(USERNAME_KEY, MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString(username_key, username.getText().toString());
+                            editor.apply();
+
+                            reference = FirebaseDatabase.getInstance().getReference().child("Users").child(username.getText().toString());
+                            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    dataSnapshot.getRef().child("username").setValue(username.getText().toString());
+                                    dataSnapshot.getRef().child("password").setValue(password.getText().toString());
+                                    dataSnapshot.getRef().child("email_address").setValue(email_address.getText().toString());
+                                    dataSnapshot.getRef().child("user_balance").setValue(800);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    btn_continue.setText("Continue");
+                                    btn_continue.setEnabled(true);
+                                }
+                            });
+
+                            startActivity(new Intent(RegisterOneActivity.this, RegisterTwoActivity.class));
+                        }
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                        btn_continue.setText("Continue");
+                        btn_continue.setEnabled(true);
                     }
                 });
-
-                startActivity(new Intent(RegisterOneActivity.this, RegisterTwoActivity.class));
             }
         });
     }

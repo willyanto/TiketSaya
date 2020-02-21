@@ -280,24 +280,16 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_marginStart="24dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:orientation="vertical">
 
             <Button
+                style="@style/btn_green_primary"
                 android:id="@+id/btn_buy_ticket"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_marginStart="24dp"
-                android:background="@drawable/bg_button_green_primary"
-                android:fontFamily="@font/mmedium"
-                android:text="Pay Now"
-                android:textColor="@android:color/white"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
+                android:text="Pay Now" />
         </LinearLayout>
     </LinearLayout>
 
